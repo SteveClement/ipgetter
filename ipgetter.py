@@ -58,6 +58,18 @@ class IPgetter(object):
     '''
 
     def __init__(self):
+        self.server_list_v6 = ['http://whatismyipaddress.com/',
+                               'http://myexternalip.com/raw',
+                               'http://www.trackip.net/',
+                               'http://icanhazip.com/',
+                               'http://whatsmyip.net/',
+                               'http://www.dslreports.com/whois',
+                               'http://www.myip.ru',
+                               'http://ipgoat.com/',
+                               'http://myexternalip.com/',
+                               'https://wtfismyip.com/text',
+                               'https://diagnostic.opendns.com/myip']
+
         self.server_list = ['http://ip.dnsexit.com',
                             'http://ifconfig.me/ip',
                             'http://echoip.com',
