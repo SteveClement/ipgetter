@@ -2,6 +2,14 @@
 import ipgetter
 
 import socket
+from sys import version_info
+
+PY3K = version_info >= (3, 0)
+
+if PY3K:
+    from urllib.parse import urlparse
+else:
+    from urlparse import urlparse
 
 showV4 = False
 showV6 = True
@@ -10,10 +18,8 @@ showFail = False
 pg = ipgetter.IPgetter()
 
 for url in pg.server_list:
-    # Yeah, this could be mor beautiful, but it is not.
-    fqdn = url.replace('http://','')
-    fqdn = fqdn.replace('https://','')
-    fqdn = fqdn.split('/',1)[0]
+    parsed_uri = urlparse(url)
+    fqdn = parsed_uri.netloc
 
     try:
         v6 = socket.getaddrinfo(fqdn, None, socket.AF_INET6)
