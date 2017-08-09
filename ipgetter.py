@@ -31,6 +31,7 @@ as published by Sam Hocevar. See http://www.wtfpl.net/ for more details.
 
 import re
 import random
+import socket
 
 from sys import version_info
 
@@ -38,10 +39,23 @@ PY3K = version_info >= (3, 0)
 
 if PY3K:
     import urllib.request as urllib
+    from urllib.parse import urlparse
 else:
     import urllib2 as urllib
+    from urlparse import urlparse
 
-__version__ = "0.6"
+'''
+Checking if google is reachable via IPv6. If no default IPv6 route, this will be false.
+'''
+
+haveIPv6 = True
+s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+try:
+    s.connect(('ipv6.google.com', 0))
+except:
+    have_ipv6 = False
+
+__version__ = "0.6v6"
 
 
 def myip():
@@ -124,7 +138,14 @@ class IPgetter(object):
         '''
 
         myip = ''
+        myV6ip = ''
         for i in range(7):
+            if haveIPv6:
+                myV6ip = self.fetch(random.choice(self.server_list_v6))
+                if myV6ip != '':
+                    return myV6ip
+                else:
+                    continue
             myip = self.fetch(random.choice(self.server_list))
             if myip != '':
                 return myip
@@ -182,6 +203,33 @@ class IPgetter(object):
             print('{0} = {1} ocurrenc{2}'.format(ip if len(ip) > 0 else 'broken server', ocorrencia, 'y' if ocorrencia == 1 else 'ies'))
         print('\n')
         print(resultdict)
+
+    def testV6(self, server=None):
+        '''
+        This function tests IPv6 capabilities of the remote servers.
+        Takes a random server if no server given.
+        '''
+        if server is None:
+            server = random.choice(self.server_list)
+        # Yeah, this could be mor beautiful, but it is not.
+        ##fqdn = server.replace('http://','')
+        ##fqdn = fqdn.replace('https://','')
+        ##fqdn = fqdn.split('/',1)[0]
+        fqdn = parsed_uri = urlparse(server)
+        print("{uri.netloc}".format(uri=parsed_uri))
+
+        try:
+            v6 = socket.getaddrinfo(fqdn, None, socket.AF_INET6)
+            v6 = v6[0][4][0]
+            print(f"""Results for {fqdn} v6: {v6}""")
+        except:
+            v6 = False
+
+        try:
+            v4 = socket.getaddrinfo(fqdn, None, socket.AF_INET)
+            v4 = v4[0][4][0]
+        except:
+            v4 = False
 
 if __name__ == '__main__':
     print(myip())
