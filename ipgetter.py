@@ -49,9 +49,8 @@ Checking if google is reachable via IPv6. If no default IPv6 route, this will be
 '''
 
 haveIPv6 = True
-s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
 try:
-    s.connect(('ipv6.google.com', 0))
+    socket.create_connection(("ipv6.google.com",80))
 except:
     have_ipv6 = False
 
@@ -72,11 +71,16 @@ class IPgetter(object):
     '''
 
     def __init__(self):
+        '''
+        Temporary server_list of known v6 (resolvable) servers, doesn't mean
+        they return an intelligible v6 response
+        '''
         self.server_list_v6 = ['http://whatismyipaddress.com/',
                                'http://myexternalip.com/raw',
                                'http://www.trackip.net/',
                                'http://icanhazip.com/',
                                'http://whatsmyip.net/',
+                               'http://checkmyip.com/',
                                'http://www.dslreports.com/whois',
                                'http://www.myip.ru',
                                'http://ipgoat.com/',
@@ -207,14 +211,12 @@ class IPgetter(object):
     def testV6(self, server=None):
         '''
         This function tests IPv6 capabilities of the remote servers.
+        It is a poor-persons attempt by resolving the FQDN to an IPv6 address.
         Takes a random server if no server given.
         '''
         if server is None:
             server = random.choice(self.server_list)
         # Yeah, this could be mor beautiful, but it is not.
-        ##fqdn = server.replace('http://','')
-        ##fqdn = fqdn.replace('https://','')
-        ##fqdn = fqdn.split('/',1)[0]
         fqdn = parsed_uri = urlparse(server)
         print("{uri.netloc}".format(uri=parsed_uri))
 
