@@ -52,7 +52,7 @@ haveIPv6 = True
 try:
     socket.create_connection(("ipv6.google.com",80))
 except:
-    have_ipv6 = False
+    haveIPv6 = False
 
 __version__ = "0.6v6"
 
@@ -157,7 +157,7 @@ class IPgetter(object):
                 continue
         return ''
 
-    def fetch(self, server):
+    def fetch(self, server, haveIPv6=False):
         '''
         This function gets your IP from a specific server.
         '''
