@@ -145,7 +145,7 @@ class IPgetter(object):
         myV6ip = ''
         for i in range(7):
             if haveIPv6:
-                myV6ip = self.fetch(random.choice(self.server_list_v6))
+                myV6ip = self.fetch(random.choice(self.server_list_v6), haveIPv6=haveIPv6)
                 if myV6ip != '':
                     return myV6ip
                 else:
