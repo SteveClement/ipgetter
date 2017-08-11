@@ -3,10 +3,12 @@ About
 
 This module is designed to fetch your external IP address from the internet.
 It is used mostly when behind a NAT.
-It picks your IP randomly from a serverlist to minimize request overhead on a single server
+It picks your IP randomly from a serverlist to minimize request overhead on a single server.
+Further on it tries to check what your IPv6 is, if available.
 
-If you want to add or remove your server from the list contact me on github
+If you want to add or remove your server from the list contact me on github.
 
+Copyright © 2017 steve@localhost.lu
 Copyright © 2014 phoemur@gmail.com
 This work is free. You can redistribute it and/or modify it under the
 terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -21,10 +23,17 @@ API Usage
     >>> myip
        '8.8.8.8'
 
+If IPv6 available
+
+    >>> import ipgetter
+    >>> myip = ipgetter.myip()
+    >>> myip
+       [ '8.8.8.8', '2001:4860:4860::8888' ]
+
 Shell Usage
 ===========
 
-    $ python -m ipgetter    
+    $ python -m ipgetter
     '8.8.8.8'
 
 Installation
@@ -38,6 +47,9 @@ Or download the tarball or git clone the repository and then:
 
 ChangeLog
 =========
+
+0.6v6 (2017-08-12)
+ * Added rudimentary IPv6 support
 
 0.6 (2014-10-30)
  * 45 servers
