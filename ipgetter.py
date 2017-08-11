@@ -245,7 +245,6 @@ class IPgetter(object):
         try:
             v6 = socket.getaddrinfo(fqdn, None, socket.AF_INET6)
             v6 = v6[0][4][0]
-            print(f"""Results for {fqdn} v6: {v6}""")
         except:
             v6 = False
 
