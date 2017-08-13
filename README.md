@@ -30,6 +30,13 @@ If IPv6 available
     >>> myip
        [ '8.8.8.8', '2001:4860:4860::8888' ]
 
+If only IPv6 found
+
+    >>> import ipgetter
+    >>> myip = ipgetter.myip()
+    >>> myip
+       '2001:4860:4860::8888'
+
 Shell Usage
 ===========
 
@@ -39,7 +46,7 @@ Shell Usage
 Installation
 ============
 
-    # pip install ipgetter
+    # pip install git+https://github.com/SteveClement/ipgetter/tree/IPv6
 
 Or download the tarball or git clone the repository and then:
 

@@ -45,6 +45,29 @@ else:
     import urllib2 as urllib
     from urlparse import urlparse
 
+# Check if we have python > 3.3 and be gentle to python2 users (who should really make their code py3k only)
+try:
+    # Python 3.3+
+    import ipaddress
+
+    def ip_kind(addr):
+        return ipaddress.ip_address(addr).version
+
+except ImportError:
+    # Fallback
+    import socket
+
+    def ip_kind(addr):
+        try:
+            socket.inet_aton(addr)
+            return 4
+        except socket.error: pass
+        try:
+            socket.inet_pton(socket.AF_INET6, addr)
+            return 6
+        except socket.error: pass
+        raise ValueError(addr)
+
 '''
 Checking if google is reachable via IPv6. If no default IPv6 route, this will be false.
 '''
@@ -153,6 +176,8 @@ class IPgetter(object):
                 return myip
             elif myip != '':
                 return myip
+            elif myV6ip !=  '':
+                return myV6ip
             else:
                 continue
         return ''
@@ -161,14 +186,35 @@ class IPgetter(object):
         '''
         This function gets your IP from a specific server.
         '''
+
+        # Ugly hack to get either IPv4 or IPv6 response from server
+        parsed_uri = urlparse(server)
+        fqdn = "{uri.netloc}".format(uri=parsed_uri)
+        scheme = "{uri.scheme}".format(uri=parsed_uri)
+        path = "{uri.path}".format(uri=parsed_uri)
+        try:
+            ipVersion = ip_kind(fqdn[1:-1])
+            ip = fqdn
+        except ValueError:
+            addrs = socket.getaddrinfo(fqdn, 80)
+            if haveIPv6:
+                ipv6_addrs = [addr[4][0] for addr in addrs if addr[0] == socket.AF_INET6]
+                ip = "[" + ipv6_addrs[0] + "]"
+            else:
+                ipv4_addrs = [addr[4][0] for addr in addrs if addr[0] == socket.AF_INET]
+                ip = ipv4_addrs[0]
+
+        server = "{}://{}{}".format(scheme, ip, path)
         url = None
-        opener = urllib.build_opener()
-        opener.addheaders = [('User-agent',
-                              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36")]
+        OSX_Agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36"
+        win_Agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.1.5) Gecko/20091102 Firefox/3.5.5'
+        userAgent = OSX_Agent
 
         try:
-            url = opener.open(server, timeout=3)
-            content = url.read()
+            url = urllib.Request(server, None, {'User-agent' : userAgent})
+            # Next line adds the host header
+            url.host = fqdn
+            content = urllib.urlopen(url).read()
 
             # Didn't want to import chardet. Prefered to stick to stdlib
             if PY3K:
@@ -205,9 +251,6 @@ class IPgetter(object):
             return myip if len(myip) > 0 else ''
         except Exception:
             return ''
-        finally:
-            if url:
-                url.close()
 
     def test(self):
         '''
