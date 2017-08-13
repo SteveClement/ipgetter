@@ -81,11 +81,10 @@ class IPgetter(object):
                                'http://www.trackip.net/',
                                'http://icanhazip.com/',
                                'http://whatsmyip.net/',
-                               'http://checkmyip.com/',
-                               'http://[2607:fad0:3706:1::1000]/whatismyip', # Temporary, to test non FQDN servers
+                               'http://ip.pid.lu/',
+                               'http://[2001:470:1f14:910::2]/', # IP of ip.pid.lu
                                'http://www.dslreports.com/whatismyip',
                                'http://www.myip.ru',
-                               'http://ipgoat.com/',
                                'http://myexternalip.com/',
                                'https://wtfismyip.com/text',
                                'https://diagnostic.opendns.com/myip',
@@ -238,7 +237,7 @@ class IPgetter(object):
         '''
         if server is None:
             server = random.choice(self.server_list)
-        # Yeah, this could be mor beautiful, but it is not.
+        # Extract the FQDN from server
         fqdn = parsed_uri = urlparse(server)
         print("{uri.netloc}".format(uri=parsed_uri))
 
